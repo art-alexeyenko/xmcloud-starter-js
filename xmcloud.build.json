@@ -16,7 +16,7 @@
       "enabled": true,
       "type": "sxa",
       "buildCommand": "build",
-      "runCommand": "start"
+      "runCommand": "serve:ssr"
     },
     "angularstarter": {
       "path": "./examples/basic-spa",
