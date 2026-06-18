@@ -27,7 +27,10 @@ import config from '../sitecore.config';
 const browserDistFolder = join(import.meta.dirname, '../browser');
 
 const app = express();
-const angularApp = new AngularNodeAppEngine();
+// enable trust proxy headers so the app can be deployed behind a reverse proxy (e.g. for Sitecore AI deployment)
+const angularApp = new AngularNodeAppEngine({
+  trustProxyHeaders: ['x-forwarded-port', 'x-forwarded-path', 'x-forwarded-for'],
+});
 
 /**
  * Loader cache driver selection (server only).
