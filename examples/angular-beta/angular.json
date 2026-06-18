@@ -6,7 +6,7 @@
   },
   "newProjectRoot": "projects",
   "projects": {
-    "angular-beta": {
+    "content-sdk-angular": {
       "projectType": "application",
       "schematics": {},
       "root": "",
@@ -77,10 +77,10 @@
           },
           "configurations": {
             "production": {
-              "buildTarget": "angular-beta:build:production"
+              "buildTarget": "content-sdk-angular:build:production"
             },
             "development": {
-              "buildTarget": "angular-beta:build:development"
+              "buildTarget": "content-sdk-angular:build:development"
             }
           },
           "defaultConfiguration": "development"

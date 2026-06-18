@@ -17,6 +17,7 @@ import * as Imagecomponent from 'src/app/components/image.component';
 import * as ContentBlockcomponent from 'src/app/components/content-block.component';
 import * as Containercomponent from 'src/app/components/container.component';
 import * as ColumnSplittercomponent from 'src/app/components/column-splitter.component';
+import * as CdpPageViewcomponent from 'src/app/components/content-sdk/cdp-page-view.component';
 
 export const componentMap = new Map<string, AngularContentSdkComponent>([
   ['Form', ScFormComponent],
@@ -34,6 +35,7 @@ export const componentMap = new Map<string, AngularContentSdkComponent>([
   ['ContentBlock', { ...ContentBlockcomponent }],
   ['Container', { ...Containercomponent }],
   ['ColumnSplitter', { ...ColumnSplittercomponent }],
+  ['CdpPageView', { ...CdpPageViewcomponent }],
 ]);
 
 export default componentMap;
