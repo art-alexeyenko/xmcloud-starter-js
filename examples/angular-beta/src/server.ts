@@ -7,7 +7,6 @@ import {
 } from '@angular/ssr/node';
 import express from 'express';
 import { join } from 'node:path';
-import fsDriver from 'unstorage/drivers/fs';
 import memoryDriver from 'unstorage/drivers/memory';
 import {
   createCacheAdminMiddleware,
@@ -15,11 +14,14 @@ import {
   createEditingRenderMiddleware,
   createLoaderCache,
   createLoaderDataServiceMiddleware,
+  createRobotsMiddleware,
   createMultisiteMiddleware,
   createPersonalizeMiddleware,
   createSitecoreRevalidateMiddleware,
+  createSitemapMiddleware,
 } from '@sitecore-content-sdk/angular';
 import { LOADERS } from './content-sdk/loaders';
+import { getClient } from './content-sdk/client/sitecore-client';
 import { componentMap } from '.sitecore/component-map';
 import sites from '.sitecore/sites.json';
 import config from '../sitecore.config';
@@ -27,27 +29,17 @@ import config from '../sitecore.config';
 const browserDistFolder = join(import.meta.dirname, '../browser');
 
 const app = express();
-// enable trust proxy headers so the app can be deployed behind a reverse proxy (e.g. for Sitecore AI deployment)
-const angularApp = new AngularNodeAppEngine({
-  trustProxyHeaders: ['x-forwarded-port', 'x-forwarded-path', 'x-forwarded-for'],
-});
+const angularApp = new AngularNodeAppEngine();
 
 /**
  * Loader cache driver selection (server only).
- *
- *   LOADER_CACHE_DRIVER unset            → in-memory Map (default)
- *   LOADER_CACHE_DRIVER=unstorage-memory → unstorage with memory driver
- *   LOADER_CACHE_DRIVER=unstorage-fs     → unstorage with fs driver (persists)
- *
- * The fs driver writes to `./.cache/loaders/<key>.json`, surviving process restarts.
+ * Uses unstorage memoryDriver by default
+ * Can be considered with other drivers, for example fsDriver:
+ * import fsDriver from 'unstorage/drivers/fs';
+ * ...
+ * const driver = fsDriver({ base: './.cache/loaders' })
  */
-const driverChoice = process.env.LOADER_CACHE_DRIVER;
-const driver =
-  driverChoice === 'unstorage-fs'
-    ? fsDriver({ base: './.cache/loaders' })
-    : driverChoice === 'unstorage-memory'
-      ? memoryDriver()
-      : undefined;
+const driver = memoryDriver();
 
 const loaderCache = createLoaderCache({
   revalidate: config.angular.loadersCache.revalidate,
@@ -63,6 +55,23 @@ app.use(
   createSitecoreRevalidateMiddleware({
     cache: loaderCache,
     defaultLocale: config.defaultLanguage,
+    sites,
+  })
+);
+
+/** Sitemap at `/sitemap.xml` and numbered `/sitemap-{id}.xml`. */
+const sitemapMiddleware = createSitemapMiddleware({
+  client: getClient(),
+  sites,
+});
+app.use('/sitemap.xml', sitemapMiddleware);
+app.use('/sitemap-:id.xml', sitemapMiddleware);
+
+/** robots.txt at `/robots.txt`. */
+app.use(
+  '/robots.txt',
+  createRobotsMiddleware({
+    client: getClient(),
     sites,
   })
 );
@@ -172,7 +181,7 @@ app.use((req, res, next) => {
 
 /**
  * Start the server if this module is the main entry point
- * The server listens on the port defined by the `PORT` environment variable, or defaults to 4000.
+ * The server listens on the port defined by the `PORT` environment variable, or defaults to 3000.
  */
 if (isMainModule(import.meta.url)) {
   const port = process.env.PORT || 3000;
