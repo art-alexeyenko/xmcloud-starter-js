@@ -4,10 +4,10 @@ import {
   NextImage as ContentSdkImage,
   LinkField,
   Text,
+  Link,
 } from "@sitecore-content-sdk/nextjs";
 import React from "react";
-import { ComponentProps } from "lib/component-props";
-import { CompatibleLink } from "components/content-sdk/CompatibleLink";
+import { ComponentProps } from "lib/component-props"
 
 interface ImageFields {
   Image: ImageField;
@@ -96,9 +96,9 @@ export const Default: React.FC<ImageProps> = (props) => {
   return (
     <ImageWrapper className={`component image ${styles}`} id={typeof id === "string" ? id : undefined}>
       {shouldWrapWithLink ? (
-        <CompatibleLink field={fields.TargetUrl}>
+        <Link field={fields.TargetUrl}>
           <Image />
-        </CompatibleLink>
+        </Link>
       ) : (
         <Image />
       )}

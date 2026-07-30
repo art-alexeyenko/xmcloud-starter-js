@@ -1,6 +1,4 @@
-import React from 'react';
-import { Text, LinkField, TextField } from '@sitecore-content-sdk/nextjs';
-import { CompatibleLink } from 'components/content-sdk/CompatibleLink';
+import { Text, LinkField, TextField, Link } from '@sitecore-content-sdk/nextjs';
 import { ComponentProps } from 'lib/component-props';
 
 interface LinkListProps extends ComponentProps {
@@ -46,7 +44,7 @@ const LinkListItem = ({
   return (
     <li className={classNames}>
       <div className="field-link">
-        <CompatibleLink field={field} />
+        <Link field={field} />
       </div>
     </li>
   );
